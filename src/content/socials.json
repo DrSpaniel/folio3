@@ -5,7 +5,16 @@
 			"type": "lucide",
 			"name": "github"
 		},
-		"text": "GitHub",
-		"link": "https://github.com/louisescher/spectre"
+		"text": "GitHub!",
+		"link": "https://github.com/drspaniel"
+	},
+	{
+		"id": 2,
+		"icon": {
+			"type": "lucide",
+			"name": "youtube"
+		},
+		"text": "YouTube!",
+		"link": "https://www.youtube.com/@DoctorSpaniel"
 	}
 ]

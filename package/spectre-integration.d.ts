@@ -73,7 +73,7 @@ interface GiscusOptions {
 
 declare module 'spectre:globals' {
 	/**
-	 * The name that should be displayed on the main page.
+	 * Daniel G
 	 */
 	export const name: string;
 	/**
