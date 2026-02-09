@@ -76,6 +76,7 @@ const projects = defineCollection({
 			description: z.string(),
 			date: z.coerce.date(),
 			image: image(),
+				carousel: z.array(image()).optional(),
 			link: z.string().url().optional(),
 			info: z.array(
 				z.object({

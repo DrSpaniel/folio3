@@ -24,6 +24,7 @@ export const getStaticPaths = (async () => {
 console.log(project.data.info);
 
 const { Content } = await render(project);
+const carouselImages = project.data.carousel?.length ? project.data.carousel : (project.data.image ? [project.data.image] : []);
 ---
 <Layout
   title={project.data.title}
@@ -54,7 +55,33 @@ const { Content } = await render(project);
   <article slot="right" data-pagefind-body>
     <Card>
       <div class="article-header" id="_top" data-pagefind-ignore>
-        {project.data.image && <ImageGlow quality={100} class="article-image" src={project.data.image} alt={project.data.title} />}
+        {carouselImages.length > 0 && (
+          <div class="project-carousel" data-interval="7000" data-count={carouselImages.length}>
+            {carouselImages.map((image, index) => (
+              <div class="carousel-slide" class:list={{ 'is-active': index === 0 }}>
+                <ImageGlow
+                  quality={100}
+                  class="article-image"
+                  src={image}
+                  alt={`${project.data.title} image ${index + 1}`}
+                />
+              </div>
+            ))}
+            <button class="carousel-nav carousel-prev" type="button" aria-label="Previous image">‹</button>
+            <button class="carousel-nav carousel-next" type="button" aria-label="Next image">›</button>
+            <div class="carousel-dots" role="tablist" aria-label="Image selection">
+              {carouselImages.map((_, index) => (
+                <button
+                  class="carousel-dot"
+                  class:list={{ 'is-active': index === 0 }}
+                  type="button"
+                  aria-label={`Show image ${index + 1}`}
+                  data-index={index}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         <div class="header">
           <div>
             <h1 class="no-mt article-h1">{project.data.title}</h1>
@@ -70,10 +97,119 @@ const { Content } = await render(project);
     </Card>
   </article>
 </Layout>
+<div class="lightbox" aria-hidden="true">
+	<div class="lightbox-content" role="dialog" aria-modal="true">
+		<img class="lightbox-image" alt="" />
+	</div>
+</div>
+<script>
+  const carousels = document.querySelectorAll('.project-carousel');
+  const lightbox = document.querySelector('.lightbox');
+  const lightboxImage = lightbox?.querySelector('.lightbox-image');
+  const lightboxImageEl = lightboxImage instanceof HTMLImageElement ? lightboxImage : null;
+
+  const openLightbox = (src: string, alt?: string) => {
+    if (!lightbox || !lightboxImageEl) return;
+    lightboxImageEl.src = src;
+    lightboxImageEl.alt = alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open');
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox || !lightboxImageEl) return;
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImageEl.src = '';
+    lightboxImageEl.alt = '';
+    document.body.classList.remove('lightbox-open');
+  };
+
+  carousels.forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.carousel-slide'));
+    const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('.carousel-dot'));
+    const prevButton = carousel.querySelector<HTMLButtonElement>('.carousel-prev');
+    const nextButton = carousel.querySelector<HTMLButtonElement>('.carousel-next');
+    const images = Array.from(carousel.querySelectorAll<HTMLImageElement>('.carousel-slide .glow-image img:not(.glow)'));
+    const intervalMs = Number(carousel.getAttribute('data-interval')) || 7000;
+    let currentIndex = 0;
+    let timerId: number | undefined;
+
+    const setActive = (nextIndex: number) => {
+      currentIndex = (nextIndex + slides.length) % slides.length;
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('is-active', index === currentIndex);
+      });
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentIndex);
+      });
+    };
+
+    const startTimer = () => {
+      if (slides.length <= 1) return;
+      timerId = window.setInterval(() => setActive(currentIndex + 1), intervalMs);
+    };
+
+    const resetTimer = () => {
+      if (timerId) window.clearInterval(timerId);
+      startTimer();
+    };
+
+    prevButton?.addEventListener('click', () => {
+      setActive(currentIndex - 1);
+      resetTimer();
+    });
+
+    nextButton?.addEventListener('click', () => {
+      setActive(currentIndex + 1);
+      resetTimer();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const index = Number(dot.getAttribute('data-index')) || 0;
+        setActive(index);
+        resetTimer();
+      });
+    });
+
+    images.forEach((image) => {
+      image.addEventListener('click', (event) => {
+        event.preventDefault();
+        openLightbox(image.currentSrc || image.src, image.alt);
+      });
+    });
+
+    setActive(0);
+    startTimer();
+  });
+
+  lightbox?.addEventListener('click', (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+
+  lightbox?.querySelector('.lightbox-content')?.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLightbox();
+  });
+</script>
 <style>
   .project-info-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
+  }
+
+  .project-info-item svg {
+    flex: 0 0 auto;
+  }
+
+  .project-info-item span {
+    min-width: 0;
+    display: block;
   }
 </style>
