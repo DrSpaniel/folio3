@@ -17,10 +17,10 @@ const config = defineConfig({
 		mdx(),
 		sitemap(),
 		spectre({
-			name: 'Daniel Gonzalez',
+			name: 'Daniel Gonzalez!',
 			openGraph: {
 				home: {
-					title: 'Daniel Gonzalez',
+					title: "Daniel Gonzalez loves video games!",
 					description: 'A minimalistic theme for Astro.',
 				},
 				blog: {
