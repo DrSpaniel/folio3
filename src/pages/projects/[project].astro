@@ -25,6 +25,9 @@ console.log(project.data.info);
 
 const { Content } = await render(project);
 const carouselImages = project.data.carousel?.length ? project.data.carousel : (project.data.image ? [project.data.image] : []);
+const base = import.meta.env.BASE_URL;
+const basePath = base.replace(/\/$/, '');
+const withBase = (target) => `${basePath}${target}`;
 ---
 <Layout
   title={project.data.title}
@@ -93,7 +96,7 @@ const carouselImages = project.data.carousel?.length ? project.data.carousel : (
       </div>
       <Content />
       <hr class="end-of-article" />
-      <a href="/projects" class="block-link" data-pagefind-ignore>← Back to projects</a>
+      <a href={withBase('/projects')} class="block-link" data-pagefind-ignore>← Back to projects</a>
     </Card>
   </article>
 </Layout>

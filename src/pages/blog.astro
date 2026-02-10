@@ -9,6 +9,9 @@ import Layout from '../layouts/Layout.astro';
 
 const posts = await getCollection('posts', (post) => post.data.draft !== true);
 const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
+const base = import.meta.env.BASE_URL;
+const basePath = base.replace(/\/$/, '');
+const withBase = (target) => `${basePath}${target}`;
 ---
 <Layout
   title={openGraph.blog.title || "Blog"}
@@ -23,7 +26,7 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
           <li>
             <a
               class="blog-tag"
-              href="/blog"
+              href={withBase('/blog')}
               data-tag={tag}
             >
               {tag}
@@ -40,8 +43,8 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 				<h2>Latest Posts</h2>
 			</div>
 			<div class="content-container">
-				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post) => (
-					<a href={`/blog/${post.id}`} class="post-container" data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
+        {posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post) => (
+          <a href={withBase(`/blog/${post.id}`)} class="post-container" data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
 						<div class="post-header">
 							<h3>{post.data.title}</h3>
 							<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>

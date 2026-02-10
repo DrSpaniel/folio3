@@ -42,6 +42,9 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { Content, headings } = await render(post);
+const base = import.meta.env.BASE_URL;
+const basePath = base.replace(/\/$/, '');
+const withBase = (target) => `${basePath}${target}`;
 ---
 
 <Layout
@@ -87,7 +90,7 @@ const { Content, headings } = await render(post);
       </div>
       <Content />
       <hr class="end-of-article" />
-      <a href="/blog" class="block-link" data-pagefind-ignore>← Back to blog</a>
+      <a href={withBase('/blog')} class="block-link" data-pagefind-ignore>← Back to blog</a>
     </Card>
     {giscus && (
       <Card>

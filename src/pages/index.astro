@@ -19,6 +19,9 @@ const [posts, projects, about, workExperience, quickInfo, socials] = await Promi
 ]);
 
 const { Content: About } = await render(about!);
+const base = import.meta.env.BASE_URL;
+const basePath = base.replace(/\/$/, '');
+const withBase = (target) => `${basePath}${target}`;
 ---
 
 <Layout
@@ -66,11 +69,11 @@ const { Content: About } = await render(about!);
 		<Card>
 			<div class="header-container">
 				<Icon type='lucide' name="folder-git" width={24} height={24} class='glow-icon' />
-				<h2><a href="/projects" class="section-link">Latest Projects</a></h2>
+				<h2><a href={withBase('/projects')} class="section-link">Latest Projects</a></h2>
 			</div>
 			<div class="content-container">
 				{projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2).map((project) => (
-					<a href={`/projects/${project.id}`} class="post-container project-preview">
+					<a href={withBase(`/projects/${project.id}`)} class="post-container project-preview">
 						<h3 class="project-title">{project.data.title}</h3>
 						<span class="post-date project-date">{project.data.date.toLocaleDateString()}</span>
 						<span class="project-desc">{project.data.description}</span>
@@ -88,7 +91,7 @@ const { Content: About } = await render(about!);
 						)}
 					</a>
 				))}
-				<a href="/projects" class="post-container see-more">See more...</a>
+				<a href={withBase('/projects')} class="post-container see-more">See more...</a>
 			</div>
 		</Card>
 	</div>
