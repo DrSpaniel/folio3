@@ -21,7 +21,7 @@ interface Props {
 const { title, description, image, pagefindIgnore, article } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, '');
-const withBase = (target) => `${basePath}${target}`;
+function withBase(target: string) { return `${basePath}${target}`; }
 const ogFallback = Astro.site
 	? new URL(withBase('/img/og.png'), Astro.site).toString()
 	: withBase('/img/og.png');

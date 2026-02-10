@@ -27,7 +27,7 @@ const { Content } = await render(project);
 const carouselImages = project.data.carousel?.length ? project.data.carousel : (project.data.image ? [project.data.image] : []);
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, '');
-const withBase = (target) => `${basePath}${target}`;
+function withBase(target: string) { return `${basePath}${target}`; }
 ---
 <Layout
   title={project.data.title}

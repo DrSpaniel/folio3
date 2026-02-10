@@ -21,7 +21,7 @@ const [posts, projects, about, workExperience, quickInfo, socials] = await Promi
 const { Content: About } = await render(about!);
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, '');
-const withBase = (target) => `${basePath}${target}`;
+function withBase(target: string) { return `${basePath}${target}`; }
 ---
 
 <Layout

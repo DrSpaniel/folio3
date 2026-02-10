@@ -5,9 +5,9 @@ import Icon from './Icon.astro';
 const path = Astro.url.pathname;
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, '');
-const withBase = (target) => `${basePath}${target}`;
+function withBase(target: string) { return `${basePath}${target}`; }
 const pagefindUrl = `${basePath}/pagefind/pagefind.js`;
-const isActive = (target) => path.startsWith(`${basePath}${target}`);
+function isActive(target: string) { return path.startsWith(`${basePath}${target}`); }
 ---
 <nav>
   <a class="site-title" href={withBase('/')}>{name}</a>
@@ -30,8 +30,8 @@ const isActive = (target) => path.startsWith(`${basePath}${target}`);
     <Icon type="lucide" name="x" width={24} height={24} class="menu-open" />
   </button>
 </nav>
-<script is:inline>
-  const pagefindUrl = ${JSON.stringify(pagefindUrl)};
+<script is:inline data-pagefind-url={pagefindUrl}>
+  const pagefindUrl = document.currentScript.getAttribute('data-pagefind-url');
   const searchElement = document.querySelector('#search');
   const results = document.querySelector('#search-results');
   const navToggle = document.querySelector('.mobile-nav-toggle');
