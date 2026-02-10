@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import { openGraph } from 'spectre:globals';
 import Card from '../components/Card.astro';
 import Icon from '../components/Icon.astro';
+import ImageGlow from '../components/ImageGlow.astro';
 import Layout from '../layouts/Layout.astro';
 
 const projects = await getCollection('projects');
@@ -36,12 +37,20 @@ function withBase(target: string) { return `${basePath}${target}`; }
 			</div>
 			<div class="content-container">
 				{projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).map((post) => (
-					<a href={withBase(`/projects/${post.id}`)} class="post-container">
-						<div class="post-header">
-							<h3>{post.data.title}</h3>
-							<span class="post-date">{post.data.date.toLocaleDateString()}</span>
-						</div>
-						<span>{post.data.description}</span>
+					<a href={withBase(`/projects/${post.id}`)} class="post-container project-preview">
+						<h3 class="project-title">{post.data.title}</h3>
+						<span class="post-date project-date">{post.data.date.toLocaleDateString()}</span>
+						<span class="project-desc">{post.data.description}</span>
+						{post.data.image && (
+							<div class="project-thumb">
+								<ImageGlow
+									quality={90}
+									src={post.data.image}
+									alt={`${post.data.title} preview`}
+									class="project-thumb-image"
+								/>
+							</div>
+						)}
 					</a>
 				))}
 			</div>
