@@ -7,8 +7,7 @@ import { spectreDark } from './src/ec-theme';
 
 // https://astro.build/config
 const config = defineConfig({
-	site: 'https://drspaniel.github.io/folio3',
-	base: '/folio3',
+	site: 'https://drspaniel.com',
 	devToolbar: { enabled: false },
 	output: 'static',
 	integrations: [
