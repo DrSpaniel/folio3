@@ -16,5 +16,14 @@
 		},
 		"text": "YouTube!",
 		"link": "https://www.youtube.com/@DoctorSpaniel"
+	},
+	{
+		"id": 3,
+		"icon": {
+			"type": "lucide",
+			"name": "instagram"
+		},
+		"text": "Instagram",
+		"link": "https://www.instagram.com/doctorspaniel/"
 	}
 ]

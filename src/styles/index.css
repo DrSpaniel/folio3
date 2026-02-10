@@ -25,6 +25,11 @@
 	.layout-grid-right {
 		gap: 1rem;
 	}
+
+	.layout-grid-left {
+		display: flex;
+		flex-direction: column;
+	}
 }
 
 .flex-col-card {
@@ -73,7 +78,7 @@
 
 .project-preview.post-container {
 	display: grid;
-	grid-template-columns: 1fr 120px;
+	grid-template-columns: 1fr 180px;
 	grid-template-areas:
 		"title date"
 		"desc image";
@@ -101,8 +106,9 @@
 .project-thumb {
 	grid-area: image;
 	justify-self: end;
-	width: 96px;
-	height: 96px;
+	width: 180px;
+	height: auto;
+	aspect-ratio: 16 / 9;
 }
 
 .project-thumb img {

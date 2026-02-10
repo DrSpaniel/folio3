@@ -258,7 +258,9 @@ class PageBackground {
  * Loads the Geist Mono font. We have to do this asynchronously because the font is not preloaded.
  */
 async function loadFont() {
-	const font = new FontFace('Geist Mono', 'url(/fonts/GeistMono.woff2)');
+	const baseUrl = import.meta.env.BASE_URL;
+	const fontUrl = `${baseUrl}fonts/GeistMono.woff2`;
+	const font = new FontFace('Geist Mono', `url(${fontUrl})`);
 
 	await font.load();
 
