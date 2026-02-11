@@ -2,6 +2,7 @@
 import '../../styles/article.css';
 
 import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import Card from '../../components/Card.astro';
@@ -16,7 +17,7 @@ interface Props {
 const { project } = Astro.props;
 
 export const getStaticPaths = (async () => {
-	const projects = await getCollection('projects');
+  const projects = await getCollection('projects', (project) => project.data.draft !== true);
 
 	return projects.map((project) => ({ params: { project: project.id }, props: { project } }));
 }) satisfies GetStaticPaths;
@@ -24,10 +25,36 @@ export const getStaticPaths = (async () => {
 console.log(project.data.info);
 
 const { Content } = await render(project);
-const carouselImages = project.data.carousel?.length ? project.data.carousel : (project.data.image ? [project.data.image] : []);
+const rawCarousel = project.data.carousel?.length ? project.data.carousel : (project.data.image ? [project.data.image] : []);
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, '');
 function withBase(target: string) { return `${basePath}${target}`; }
+
+const extractYouTubeId = (url: string) => {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+  return match?.[1] ?? null;
+};
+
+const youTubeParams = 'enablejsapi=1&playsinline=1&rel=0';
+const carouselItems = rawCarousel
+  .map((item, index) => {
+    if (typeof item === 'object' && 'type' in item && item.type === 'youtube') {
+      const id = item.id || (item.url ? extractYouTubeId(item.url) : null);
+      if (!id) return null;
+      return {
+        kind: 'youtube',
+        embedUrl: `https://www.youtube-nocookie.com/embed/${id}?${youTubeParams}`,
+        title: `${project.data.title} video ${index + 1}`,
+      };
+    }
+
+    return {
+      kind: 'image',
+      image: item as ImageMetadata,
+      alt: `${project.data.title} image ${index + 1}`,
+    };
+  })
+  .filter((item): item is { kind: 'image'; image: ImageMetadata; alt: string } | { kind: 'youtube'; embedUrl: string; title: string } => item !== null);
 ---
 <Layout
   title={project.data.title}
@@ -58,22 +85,37 @@ function withBase(target: string) { return `${basePath}${target}`; }
   <article slot="right" data-pagefind-body>
     <Card>
       <div class="article-header" id="_top" data-pagefind-ignore>
-        {carouselImages.length > 0 && (
-          <div class="project-carousel" data-interval="7000" data-count={carouselImages.length}>
-            {carouselImages.map((image, index) => (
-              <div class="carousel-slide" class:list={{ 'is-active': index === 0 }}>
-                <ImageGlow
-                  quality={100}
-                  class="article-image"
-                  src={image}
-                  alt={`${project.data.title} image ${index + 1}`}
-                />
+        {carouselItems.length > 0 && (
+          <div class="project-carousel" data-interval="7000" data-count={carouselItems.length}>
+            {carouselItems.map((item, index) => (
+              <div class="carousel-slide" data-kind={item.kind} class:list={{ 'is-active': index === 0 }}>
+                {item.kind === 'image' ? (
+                  <ImageGlow
+                    quality={100}
+                    class="article-image"
+                    src={item.image}
+                    alt={item.alt}
+                  />
+                ) : (
+                  <div class="carousel-video">
+                    <iframe
+                      id={`yt-${project.id}-${index}`}
+                      src={index === 0 ? item.embedUrl : ''}
+                      data-embed={item.embedUrl}
+                      title={item.title}
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerpolicy="strict-origin-when-cross-origin"
+                      allowfullscreen
+                    />
+                  </div>
+                )}
               </div>
             ))}
             <button class="carousel-nav carousel-prev" type="button" aria-label="Previous image">‹</button>
             <button class="carousel-nav carousel-next" type="button" aria-label="Next image">›</button>
             <div class="carousel-dots" role="tablist" aria-label="Image selection">
-              {carouselImages.map((_, index) => (
+              {carouselItems.map((_, index) => (
                 <button
                   class="carousel-dot"
                   class:list={{ 'is-active': index === 0 }}
@@ -134,7 +176,7 @@ function withBase(target: string) { return `${basePath}${target}`; }
     const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('.carousel-dot'));
     const prevButton = carousel.querySelector<HTMLButtonElement>('.carousel-prev');
     const nextButton = carousel.querySelector<HTMLButtonElement>('.carousel-next');
-    const images = Array.from(carousel.querySelectorAll<HTMLImageElement>('.carousel-slide .glow-image img:not(.glow)'));
+    const images = Array.from(carousel.querySelectorAll<HTMLImageElement>('.carousel-slide[data-kind="image"] .glow-image img:not(.glow)'));
     const intervalMs = Number(carousel.getAttribute('data-interval')) || 7000;
     let currentIndex = 0;
     let timerId: number | undefined;
@@ -143,10 +185,32 @@ function withBase(target: string) { return `${basePath}${target}`; }
       currentIndex = (nextIndex + slides.length) % slides.length;
       slides.forEach((slide, index) => {
         slide.classList.toggle('is-active', index === currentIndex);
+
+        const frame = slide.querySelector<HTMLIFrameElement>('iframe');
+        if (!frame) return;
+
+        const embedUrl = frame.getAttribute('data-embed');
+        const currentSrc = frame.getAttribute('src');
+
+        if (index === currentIndex) {
+          if (embedUrl && currentSrc !== embedUrl) {
+            frame.setAttribute('src', embedUrl);
+          }
+        } else if (currentSrc) {
+          frame.setAttribute('src', '');
+        }
       });
       dots.forEach((dot, index) => {
         dot.classList.toggle('is-active', index === currentIndex);
       });
+
+      // Stop auto-advance on video slides; resume on image slides
+      const activeSlide = slides[currentIndex];
+      if (activeSlide?.getAttribute('data-kind') === 'youtube') {
+        if (timerId) { window.clearInterval(timerId); timerId = undefined; }
+      } else if (!timerId) {
+        startTimer();
+      }
     };
 
     const startTimer = () => {
@@ -156,7 +220,11 @@ function withBase(target: string) { return `${basePath}${target}`; }
 
     const resetTimer = () => {
       if (timerId) window.clearInterval(timerId);
-      startTimer();
+      // Only restart if the current slide is not a video
+      const activeSlide = slides[currentIndex];
+      if (activeSlide?.getAttribute('data-kind') !== 'youtube') {
+        startTimer();
+      }
     };
 
     prevButton?.addEventListener('click', () => {

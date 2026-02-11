@@ -76,7 +76,19 @@ const projects = defineCollection({
 			description: z.string(),
 			date: z.coerce.date(),
 			image: image(),
-				carousel: z.array(image()).optional(),
+			draft: z.boolean().optional().default(false),
+			carousel: z
+				.array(
+					z.union([
+						image(),
+						z.object({
+							type: z.literal('youtube'),
+							id: z.string().optional(),
+							url: z.string().url().optional(),
+						}),
+					])
+				)
+				.optional(),
 			link: z.string().url().optional(),
 			info: z.array(
 				z.object({

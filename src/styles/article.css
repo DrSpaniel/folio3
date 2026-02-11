@@ -117,6 +117,20 @@ ol li a.active {
 	background: #0d0d0d;
 }
 
+.project-carousel .carousel-video {
+	width: 100%;
+	height: 100%;
+	background: #0d0d0d;
+	position: relative;
+}
+
+.project-carousel .carousel-video iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
 .project-carousel .glow-image img:not(.glow) {
 	cursor: zoom-in;
 }

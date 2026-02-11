@@ -25,5 +25,14 @@
 		},
 		"text": "Instagram",
 		"link": "https://www.instagram.com/doctorspaniel/"
+	},
+	{
+		"id": 4,
+		"icon": {
+			"type": "lucide",
+			"name": "mail"
+		},
+		"text": "My E-mail (say hi!)",
+		"link": "mailto:d@nielgonzalez.com"
 	}
 ]
