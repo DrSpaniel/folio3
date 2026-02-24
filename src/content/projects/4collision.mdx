@@ -14,6 +14,16 @@ info:
       name: gamepad
 --- 
 
-Having learned aboutKHSDFHISDFBDSOIHL neural networks via [codingtrain](https://codingtrain.github.io/website-archive/learning/ml5/), 
+Having learned about neural networks via [codingtrain](https://codingtrain.github.io/website-archive/learning/ml5/), 
 i managed to get a pose prediction model to interface with a space game where you dodge the meteors. 
 It uses p5.js, and ml5.js. Both really amazing libraries.
+
+##  Stuff i did:
+
+- Built a webcam-controlled game using PoseNet (ml5.js) to track body keypoints and a pre-trained neural-network classifier (34 inputs) to recognize gestures (salute to start/restart, lean left/right to steer).
+
+- Implemented a simple scene/state system (title, simulation, end) with a model-loaded gate so gameplay only begins once PoseNet is ready.
+
+- Created Ship and Meteor classes and a timed game loop: meteors spawn on an interval, survival time increments each second, and intervals are properly started/stopped on game over.
+
+- Programmed homing meteor movement using basic vector math (normalize direction toward the ship and apply velocity), plus collision detection to trigger end-state + explosion effect.
