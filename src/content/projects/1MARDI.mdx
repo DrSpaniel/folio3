@@ -19,10 +19,9 @@ Mardi was originally a part of a larger personal sprint over 10 months, however 
 on what I know about Godot to begin with before I do that. So far, MARDI is a first-person platformer
 with a unique movement system. It still is under development! So check back in a couple months to see how it looks!
 
-## Stuff I worked on:
+## Things i worked on:
+- Modular FPS controller (Godot / GDScript): Built a maintainable CharacterBody3D player controller with clean, separated handlers for movement, physics, camera, and interaction logic.
 
-- Modeling the turtle and the masks
-- Modeling the blocks
-- Textured
-- Designing the levels
-- Playtesting
+- State-driven movement system: Implemented walk/sprint/crouch/slide as cohesive states, including ceiling-aware crouch/stand transitions (raycast check + “intent to stand” handling) to prevent clipping and edge-case bugs.
+
+- Advanced traversal mechanics: Added charged jumping, sliding with timed exit conditions, and a wallrun/wallkick system using a small enum-based state machine with consistent reset behavior.

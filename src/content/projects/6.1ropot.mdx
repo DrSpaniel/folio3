@@ -22,7 +22,14 @@ From breadboard diagrams, PCB design, 3D modeling, hand soldering,
 parts sourcing, programming, html website design, this thing really had it all. 
 I love it very much.
 
-## Features
- - integrated web app
- - soil sensor for moisture detection
- - some other cool stuff i will add later...
+## Stuff I did:
+
+- Embedded networked system: runs a self-hosted HTTP server in Wi‑Fi AP mode (no external infrastructure), parses simple HTTP requests, serves dynamic HTML with sensor-driven values and UI state.
+
+- State-machine behavior design: dehydration handled as an explicit finite-state progression (state/next_state, timed by millis()), producing deterministic, testable outputs (notifications/audio/actuation) per state.
+
+- Real-time-ish scheduling pattern: uses a non-blocking timer (previousMillis/interval) to trigger periodic evaluation rather than relying only on delays (even though some delays remain).
+
+- Cross-module integration: clean integration of multiple subsystems (WiFiNINA + I2C sensor + servo PWM + serial-controlled soundboard) into one cohesive control loop.
+
+- Calibration/control endpoint: user-triggered threshold capture via a web route (GET /H) is effectively a small configuration protocol over HTTP, not hardcoded tuning.

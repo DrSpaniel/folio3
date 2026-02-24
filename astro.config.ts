@@ -21,11 +21,11 @@ const config = defineConfig({
 			openGraph: {
 				home: {
 					title: "Daniel Gonzalez loves video games!",
-					description: 'A minimalistic theme for Astro.',
+					description: 'Check my stuff out :-)',
 				},
 				blog: {
 					title: 'Blog',
-					description: 'News and guides for Spectre.',
+					description: '',
 				},
 				projects: {
 					title: 'Projects',
