@@ -32,6 +32,8 @@ p img {
 
 .toc-card {
 	min-width: 0;
+	background-color: rgba(var(--primary-rgb), 0.15) !important;
+	border-color: var(--primary) !important;
 }
 
 .toc-card ol {

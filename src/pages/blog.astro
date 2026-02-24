@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import { openGraph } from 'spectre:globals';
 import Card from '../components/Card.astro';
 import Icon from '../components/Icon.astro';
+import ImageGlow from '../components/ImageGlow.astro';
 import Layout from '../layouts/Layout.astro';
 
 const posts = await getCollection('posts', (post) => post.data.draft !== true);
@@ -44,12 +45,22 @@ function withBase(target: string) { return `${basePath}${target}`; }
 			</div>
 			<div class="content-container">
         {posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post) => (
-          <a href={withBase(`/blog/${post.id}`)} class="post-container" data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
+          <a href={withBase(`/blog/${post.id}`)} class={`post-container ${post.data.image ? 'project-preview' : ''}`} data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
 						<div class="post-header">
-							<h3>{post.data.title}</h3>
-							<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
+							<h3 className={post.data.image ? 'project-title' : ''}>{post.data.title}</h3>
+							<span class={`post-date ${post.data.image ? 'project-date' : ''}`}>{post.data.createdAt.toLocaleDateString()}</span>
 						</div>
-						<span>{post.data.description}</span>
+						<span className={post.data.image ? 'project-desc' : ''}>{post.data.description}</span>
+						{post.data.image && (
+							<div class="project-thumb">
+								<ImageGlow
+									quality={90}
+									src={post.data.image}
+									alt={`${post.data.title} preview`}
+									class="project-thumb-image"
+								/>
+							</div>
+						)}
 					</a>
 				))}
 			</div>
